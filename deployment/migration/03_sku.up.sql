@@ -1,0 +1,15 @@
+
+CREATE TABLE IF NOT EXISTS skus (
+    id SERIAL PRIMARY KEY,
+    -- product_id INTEGER NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    price INTEGER NOT NULL,
+    fragile BOOLEAN NOT NULL,
+    image_url TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
+);
+
+-- ALTER TABLE skus 
+-- ADD CONSTRAINT fk_skus_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
