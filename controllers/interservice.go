@@ -15,8 +15,7 @@ func ValidateSKU(c *gin.Context) {
 	skuID := c.Param("skuid")
 
 	log.Println("validate sku called on id -> ", skuID)
-	c.JSON(http.StatusOK, gin.H{"message": "SKU exists"})
-	return
+
 	skuIDInt, err := strconv.Atoi(skuID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sku_id"})
@@ -42,8 +41,7 @@ func ValidateSKU(c *gin.Context) {
 func ValidateInventorySKU(c *gin.Context) {
 	skuID := c.Param("skuid")
 	log.Println("validate sku called on id -> ", skuID)
-	c.JSON(http.StatusOK, gin.H{"message": "SKU Quantity>0"})
-	return
+
 	skuIDInt, err := strconv.Atoi(skuID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid SKU ID"})
