@@ -63,7 +63,7 @@ func runserver(ctx context.Context) error {
 
 func runMigration(ctx context.Context, migrationType string, number string) {
 
-	m, err := migration.InitializeMigrate("file://deployment/migration", "postgres://postgres:prateek987@localhost:5432/postgres?sslmode=disable")
+	m, err := migration.InitializeMigrate("file://deployment/migration", "postgres://postgres:@localhost:5432/postgres?sslmode=disable")
 	if err != nil {
 		panic(err)
 	}

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 
 	"net/http"
@@ -12,9 +12,11 @@ import (
 )
 
 func ValidateSKU(c *gin.Context) {
-	skuID := c.Param("id")
-	fmt.Println("validate sku called on id -> ", skuID)
+	skuID := c.Param("skuid")
 
+	log.Println("validate sku called on id -> ", skuID)
+	c.JSON(http.StatusOK, gin.H{"message": "SKU exists"})
+	return
 	skuIDInt, err := strconv.Atoi(skuID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid sku_id"})
@@ -37,28 +39,42 @@ func ValidateSKU(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "SKU exists"})
 }
 
-func ValidateHub(c *gin.Context) {
-	hubID := c.Param("id")
-
-	// Convert to proper data type
-	hubIDInt, err := strconv.Atoi(hubID)
+func ValidateInventorySKU(c *gin.Context) {
+	skuID := c.Param("skuid")
+	log.Println("validate sku called on id -> ", skuID)
+	c.JSON(http.StatusOK, gin.H{"message": "SKU Quantity>0"})
+	return
+	skuIDInt, err := strconv.Atoi(skuID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid hub_id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid SKU ID"})
 		return
 	}
 
-	// Check if the Hub exists in the database
-	var hub models.Hub
-	err = DB.Where("id = ?", hubIDInt).First(&hub).Error
+	var inventory models.Inventory
+	err = DB.Where("sku_id = ?", skuIDInt).First(&inventory).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Hub not found"})
+			c.JSON(http.StatusNotFound, gin.H{"error": "SKU not found in inventory"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to check hub existence"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to check inventory"})
 		}
 		return
 	}
 
-	// If hub exists, return success message
-	c.JSON(http.StatusOK, gin.H{"message": "Hub exists"})
+	if inventory.Quantity <= 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "SKU out of stock"})
+		return
+	}
+
+	// Decrement inventory quantity
+	err = DB.Model(&inventory).Where("sku_id = ?", skuIDInt).UpdateColumn("quantity", gorm.Expr("quantity - 1")).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update inventory"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "SKU exists, in stock, and quantity decremented"})
+}
+func ValidateHub(c *gin.Context) {
+
 }

@@ -50,10 +50,12 @@ func PublicRoutes(ctx context.Context, server *http.Server) error {
 	sku.PUT("/:id", controllers.UpdateSKU)
 	sku.DELETE("/:id", controllers.DeleteSKU)
 
-	validateHub := apiV2.Group("/validate-hub")
+	validateHub := apiV2.Group("/validate-hub/:hubid")
 	validateHub.GET("", controllers.ValidateHub)
-	validateSku := apiV2.Group("/validate-sku")
+	validateSku := apiV2.Group("/validate-sku/:skuid")
 	validateSku.GET("", controllers.ValidateSKU)
+	validateInventorySku := apiV2.Group("/inventory/:skuid")
+	validateInventorySku.GET("", controllers.ValidateInventorySKU)
 
 	return nil
 }
